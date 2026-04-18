@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Monochrome — neutral-950 base, white primary */
+    --background:  0 0%  4%;
+    --foreground:  0 0% 94%;
+
+    --card:        0 0%  7%;
+    --card-foreground: 0 0% 94%;
+
+    --popover:     0 0%  9%;
+    --popover-foreground: 0 0% 94%;
+
+    --primary:     0 0% 93%;      /* near-white → white buttons, white icons */
+    --primary-foreground: 0 0%  5%;
+
+    --secondary:   0 0% 13%;
+    --secondary-foreground: 0 0% 65%;
+
+    --muted:       0 0% 13%;
+    --muted-foreground: 0 0% 44%;
+
+    --accent:      0 0% 15%;
+    --accent-foreground: 0 0% 94%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 94%;
+
+    --border:      0 0% 16%;
+    --input:       0 0% 16%;
+    --ring:        0 0% 55%;
+
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border box-border;
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* Shimmer skeleton for indexing progress */
+  .animate-shimmer-bar {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted))     0%,
+      hsl(var(--primary) / 0.35) 40%,
+      hsl(var(--primary) / 0.55) 50%,
+      hsl(var(--primary) / 0.35) 60%,
+      hsl(var(--muted))    100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 9px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35);
+}
+
+/* Selection */
+::selection {
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--foreground));
+}

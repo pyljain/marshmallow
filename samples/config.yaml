@@ -1,0 +1,15 @@
+queue:
+  type: redis
+  connectionString: localhost:6379
+storage:
+  type: gcs
+  connectionString: marshmallow-kb
+stores:
+- name: bleve
+  indexingQueue: bleve-index
+  statusQueue: bleve-status
+  endPoint: "http://localhost:9100/api/v1/search"
+- name: lanceDB
+  indexingQueue: lanceDB-index
+  statusQueue: lanceDB-status
+  endPoint: "http://localhost:9001/api/v1/search"
