@@ -95,10 +95,19 @@ def run_listener(
             # Extract text from PDF
             reader = PdfReader(io.BytesIO(file_bytes))
 
+            def clean_text(text: str) -> str:
+                # pypdf can produce null bytes and other control chars that break JSON serialization
+                return "".join(c for c in text if c >= " " or c in "\n\r\t")
+
             print(f"Writing chunks to lancedb")
             all_docs = []
             for page_num, page in enumerate(reader.pages):
                 pdf_text = page.extract_text()
+                if not pdf_text or not pdf_text.strip():
+                    continue
+                pdf_text = clean_text(pdf_text)
+                if not pdf_text.strip():
+                    continue
                 parent_chunks = parent_chunker(pdf_text)
 
                 for p_idx, parent_chunk in enumerate(parent_chunks):
@@ -106,14 +115,20 @@ def run_listener(
                     child_chunks = child_chunker(parent_chunk.text)
 
                     for c_idx, child_chunk in enumerate(child_chunks):
+                        text = clean_text(child_chunk.text)
+                        if not text.strip():
+                            continue
                         all_docs.append({
                             "chunk_id":       f"{parent_id}_{c_idx}",
                             "parent_id":      parent_id,
                             "article_id":     articleid,
                             "name":           indexing_request["articleName"],
-                            "child_content":  child_chunk.text,
-                            "parent_content": parent_chunk.text,
+                            "child_content":  text,
+                            "parent_content": clean_text(parent_chunk.text),
                         })
+
+            if not all_docs:
+                raise ValueError("No text could be extracted from the PDF")
 
             table.add(data=all_docs)
 
@@ -121,6 +136,7 @@ def run_listener(
 
             if len(table) >= MINIMUM_ROWS_FOR_INDEX:
                 table.create_index(
+                    vector_column_name="content_vector",
                     metric="cosine",
                     num_partitions=max(1, int(len(table) ** 0.5)),
                     num_sub_vectors=48,
