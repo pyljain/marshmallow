@@ -1,0 +1,8 @@
+services:
+  frontend:
+  - ./samples
+  - ./frontend
+
+  backend:
+  - ./samples
+  - ./pkg
